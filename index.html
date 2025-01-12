@@ -73,13 +73,13 @@
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
             
-            // Significantly reduced size - now 25% of screen width for mobile
-            const targetWidth = screenWidth * 0.25;
+            // Increased size - now 40% of screen width for mobile (up from 25%)
+            const targetWidth = screenWidth * 0.40;
             // Using actual invitation aspect ratio (width:height = 3:2)
             const aspectRatio = 1.5;
             
-            // Convert to AR units with much smaller scale
-            const arWidth = (targetWidth / 2000); // Doubled the divisor for smaller size
+            // Convert to AR units with adjusted scale
+            const arWidth = (targetWidth / 1500); // Reduced divisor for larger size
             const arHeight = arWidth / aspectRatio;
 
             // Update entity geometry
@@ -89,11 +89,11 @@
                 height: arHeight
             });
 
-            // Move closer to camera for better visibility
+            // Adjust position to be slightly further from camera
             invitationEntity.setAttribute('position', {
                 x: 0,
                 y: 0,
-                z: -0.5 // Closer to camera
+                z: -0.8 // Moved slightly back for better view of larger size
             });
         }
 
