@@ -1,0 +1,9 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    }
+    #loading-screen {
+    font-family: Arial, sans-serif;
+    font-size: 1.2em;
+    color: #333;
+    }

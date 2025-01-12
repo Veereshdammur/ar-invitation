@@ -1,0 +1,11 @@
+{
+  "name": "birthday-ar-invitation",
+  "version": "1.0.0",
+  "description": "AR Birthday Invitation",
+  "scripts": {
+    "start": "http-server --cors -p 8080"
+  },
+  "dependencies": {
+    "http-server": "14.1.1"
+  }
+} 

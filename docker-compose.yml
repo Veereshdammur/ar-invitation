@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  birthday-ar:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./invitation.jpeg:/app/invitation.jpeg
+      - ./styles:/app/styles
+      - ./index.html:/app/index.html
+    command: npm start
