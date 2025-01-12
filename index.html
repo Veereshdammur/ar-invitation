@@ -5,11 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <link rel="stylesheet" href="styles/main.css">
     <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1.4.0/dist/aframe-master.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.min.js"></script>
 </head>
 <body style="margin: 0; overflow: hidden;">
+    <div id="permission-button" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; background: #007bff; color: white; padding: 15px 30px; border-radius: 25px; cursor: pointer; display: none;">
+        Click to Enable Camera
+    </div>
+
     <a-scene 
         embedded 
         arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix;"
@@ -19,7 +26,7 @@
         <a-entity
             id="invitation-entity"
             geometry="primitive: plane;"
-            material="shader: flat; src: invitation.jpeg; transparent: true; opacity: 1; side: double"
+            material="shader: flat; src: invitation.jpeg?v=${Date.now()}; transparent: true; opacity: 1; side: double"
             position="0 0 -1"
             look-at="[camera]"
             animation="property: rotation; to: 0 360 0; loop: true; dur: 15000; easing: linear">
@@ -36,6 +43,31 @@
     </div>
 
     <script>
+        async function requestCameraPermission() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                stream.getTracks().forEach(track => track.stop()); // Stop the stream after getting permission
+                document.getElementById('permission-button').style.display = 'none';
+                location.reload(); // Reload after getting permission
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                document.getElementById('permission-button').style.display = 'block';
+            }
+        }
+
+        // Check camera permission on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const permButton = document.getElementById('permission-button');
+            permButton.addEventListener('click', requestCameraPermission);
+            
+            navigator.permissions.query({ name: 'camera' })
+                .then(permissionStatus => {
+                    if (permissionStatus.state === 'denied') {
+                        permButton.style.display = 'block';
+                    }
+                });
+        });
+
         function adjustInvitationSize() {
             const invitationEntity = document.getElementById('invitation-entity');
             const screenWidth = window.innerWidth;
@@ -63,6 +95,19 @@
                 y: 0,
                 z: -0.5 // Closer to camera
             });
+        }
+
+        function forceImageReload() {
+            const invitationEntity = document.getElementById('invitation-entity');
+            const randomVersion = Math.random(); // Generate random number
+            invitationEntity.setAttribute('material', {
+                shader: 'flat',
+                src: `invitation.jpeg?v=${randomVersion}`,
+                transparent: true,
+                opacity: 1,
+                side: 'double'
+            });
+            console.log('Reloading image with version:', randomVersion);
         }
 
         // Initial size adjustment
