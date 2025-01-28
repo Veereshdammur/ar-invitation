@@ -38,7 +38,12 @@
                     align="center"
                     position="0 0 0.01"
                     scale="0.2 0.2 0.2"
-                    color="#000000">
+                    color="#000000"
+                    width="2"
+                    font="fonts/Roboto-msdf.json"
+                    font-image="fonts/Roboto-msdf.png"
+                    negate="false"
+                    class="responsive-text">
                 </a-text>
             </a-entity>
 
@@ -54,7 +59,12 @@
                     align="center"
                     position="0 0 0.01"
                     scale="0.2 0.2 0.2"
-                    color="#000000">
+                    color="#000000"
+                    width="2"
+                    font="fonts/Roboto-msdf.json"
+                    font-image="fonts/Roboto-msdf.png"
+                    negate="false"
+                    class="responsive-text">
                 </a-text>
             </a-entity>
 
@@ -70,7 +80,12 @@
                     align="center"
                     position="0 0 0.01"
                     scale="0.2 0.2 0.2"
-                    color="#000000">
+                    color="#000000"
+                    width="2"
+                    font="fonts/Roboto-msdf.json"
+                    font-image="fonts/Roboto-msdf.png"
+                    negate="false"
+                    class="responsive-text">
                 </a-text>
             </a-entity>
         </a-entity>
@@ -131,6 +146,34 @@
             const screenWidth = window.innerWidth;
             const isMobile = screenWidth < 768;
             
+            // Calculate responsive text scale based on viewport width
+            const calculateTextScale = () => {
+                const baseScale = 0.2;
+                const minScale = 0.15;  // Minimum scale for very small screens
+                const maxScale = 0.25;  // Maximum scale for large screens
+                
+                // Use viewport width to calculate scale
+                const viewportScale = (screenWidth / 1920) * baseScale; // 1920 is a reference desktop width
+                
+                // Clamp the scale between min and max values
+                return Math.min(Math.max(viewportScale, minScale), maxScale);
+            };
+
+            const textScale = calculateTextScale();
+            
+            // Update all text elements with the new scale
+            document.querySelectorAll('a-text').forEach(text => {
+                text.setAttribute('scale', `${textScale} ${textScale} ${textScale}`);
+                
+                // Adjust width based on screen size
+                const textWidth = isMobile ? 1.5 : 2;
+                text.setAttribute('width', textWidth);
+                
+                // Adjust line height for better readability on mobile
+                const lineHeight = isMobile ? 1.2 : 1;
+                text.setAttribute('line-height', lineHeight);
+            });
+
             // Adjust cards based on screen size
             if (isMobile) {
                 // Mobile layout - stack cards vertically
@@ -196,12 +239,14 @@
             }
         }
 
-        // Add event listeners for responsive updates
-        window.addEventListener('load', adjustARContent);
-        window.addEventListener('resize', adjustARContent);
-        window.addEventListener('orientationchange', () => {
-            setTimeout(adjustARContent, 100); // Delay to ensure orientation change is complete
+        // Add a resize observer for more precise text scaling
+        const resizeObserver = new ResizeObserver(entries => {
+            requestAnimationFrame(() => {
+                adjustARContent();
+            });
         });
+
+        resizeObserver.observe(document.body);
 
         // Update the existing scene loaded event
         document.querySelector('a-scene').addEventListener('loaded', function () {
@@ -224,5 +269,21 @@
             console.error('Error loading image:', e);
         });
     </script>
+
+    <style>
+    /* Add CSS variables for text sizing */
+    :root {
+        --min-font-scale: 0.15;
+        --max-font-scale: 0.25;
+        --preferred-font-scale: 0.2;
+    }
+
+    /* Add some base styles for text smoothing */
+    a-text {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+    </style>
 </body>
 </html>
