@@ -23,14 +23,71 @@
         vr-mode-ui="enabled: false"
         renderer="logarithmicDepthBuffer: true; precision: medium;"
         loading-screen="enabled: false">
-        <a-entity
-            id="invitation-entity"
-            geometry="primitive: plane;"
-            material="shader: flat; src: invitation.jpeg?v=${Date.now()}; transparent: true; opacity: 1; side: double"
-            position="0 0 -1"
-            look-at="[camera]"
-            animation="property: rotation; to: 0 360 0; loop: true; dur: 15000; easing: linear">
+        
+        <!-- Event Details Cards -->
+        <a-entity id="cards-container" position="0 0 -1">
+            <!-- Venue Card -->
+            <a-entity
+                geometry="primitive: plane; width: 0.4; height: 0.3;"
+                material="color: #ff9999; opacity: 0.9;"
+                position="-0.5 0.2 0"
+                rotation="0 0 0"
+                animation="property: position; to: -0.5 0.3 0; dir: alternate; dur: 2000; easing: easeInOutQuad; loop: true">
+                <a-text
+                    value="Venue\n\nGrand Plaza Hotel\n123 Party Street\nNew York, NY"
+                    align="center"
+                    position="0 0 0.01"
+                    scale="0.2 0.2 0.2"
+                    color="#000000">
+                </a-text>
+            </a-entity>
+
+            <!-- Ceremony Card -->
+            <a-entity
+                geometry="primitive: plane; width: 0.4; height: 0.3;"
+                material="color: #99ff99; opacity: 0.9;"
+                position="0 0.2 0"
+                rotation="0 0 0"
+                animation="property: position; to: 0 0.4 0; dir: alternate; dur: 2000; easing: easeInOutQuad; loop: true; delay: 500">
+                <a-text
+                    value="Ceremony\n\n2:00 PM\nFollowed by\nReception"
+                    align="center"
+                    position="0 0 0.01"
+                    scale="0.2 0.2 0.2"
+                    color="#000000">
+                </a-text>
+            </a-entity>
+
+            <!-- Date Card -->
+            <a-entity
+                geometry="primitive: plane; width: 0.4; height: 0.3;"
+                material="color: #9999ff; opacity: 0.9;"
+                position="0.5 0.2 0"
+                rotation="0 0 0"
+                animation="property: position; to: 0.5 0.3 0; dir: alternate; dur: 2000; easing: easeInOutQuad; loop: true; delay: 1000">
+                <a-text
+                    value="Date\n\nSaturday\nJune 15, 2024"
+                    align="center"
+                    position="0 0 0.01"
+                    scale="0.2 0.2 0.2"
+                    color="#000000">
+                </a-text>
+            </a-entity>
         </a-entity>
+
+        <!-- Balloons -->
+        <a-entity id="balloons-container">
+            <a-sphere class="balloon" position="-0.3 -0.5 -1" radius="0.1" color="#ff0000"
+                animation="property: position; to: -0.3 2 -1; dur: 15000; easing: easeInOutQuad; loop: true">
+            </a-sphere>
+            <a-sphere class="balloon" position="0 -0.7 -1" radius="0.1" color="#00ff00"
+                animation="property: position; to: 0 2 -1; dur: 12000; easing: easeInOutQuad; loop: true">
+            </a-sphere>
+            <a-sphere class="balloon" position="0.3 -0.6 -1" radius="0.1" color="#0000ff"
+                animation="property: position; to: 0.3 2 -1; dur: 18000; easing: easeInOutQuad; loop: true">
+            </a-sphere>
+        </a-entity>
+
         <a-camera position="0 0 0" look-controls-enabled="false"></a-camera>
     </a-scene>
 
@@ -110,12 +167,35 @@
             console.log('Reloading image with version:', randomVersion);
         }
 
+        function adjustCardSizes() {
+            const cardsContainer = document.getElementById('cards-container');
+            const screenWidth = window.innerWidth;
+            
+            // Adjust position based on screen size
+            if (screenWidth < 768) {
+                cardsContainer.setAttribute('position', '0 0 -0.8');
+                cardsContainer.setAttribute('scale', '0.8 0.8 0.8');
+            } else {
+                cardsContainer.setAttribute('position', '0 0 -1');
+                cardsContainer.setAttribute('scale', '1 1 1');
+            }
+        }
+
         // Initial size adjustment
-        window.addEventListener('load', adjustInvitationSize);
+        window.addEventListener('load', () => {
+            adjustInvitationSize();
+            adjustCardSizes();
+        });
         
         // Adjust size when screen is resized or orientation changes
-        window.addEventListener('resize', adjustInvitationSize);
-        window.addEventListener('orientationchange', adjustInvitationSize);
+        window.addEventListener('resize', () => {
+            adjustInvitationSize();
+            adjustCardSizes();
+        });
+        window.addEventListener('orientationchange', () => {
+            adjustInvitationSize();
+            adjustCardSizes();
+        });
 
         document.querySelector('a-scene').addEventListener('loaded', function () {
             document.getElementById('loading-screen').style.display = 'none';
